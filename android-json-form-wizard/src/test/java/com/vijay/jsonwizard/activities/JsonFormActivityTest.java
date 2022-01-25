@@ -1,7 +1,7 @@
 package com.vijay.jsonwizard.activities;
 
 import android.content.Intent;
-import android.support.v7.widget.AppCompatRadioButton;
+import androidx.appcompat.widget.AppCompatRadioButton;
 import android.text.Html;
 import android.text.Spanned;
 import android.widget.LinearLayout;
