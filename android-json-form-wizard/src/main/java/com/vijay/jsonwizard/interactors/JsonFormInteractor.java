@@ -29,6 +29,7 @@ import com.vijay.jsonwizard.widgets.HorizontalLineFactory;
 import com.vijay.jsonwizard.widgets.ImagePickerFactory;
 import com.vijay.jsonwizard.widgets.ImageViewFactory;
 import com.vijay.jsonwizard.widgets.LabelFactory;
+import com.vijay.jsonwizard.widgets.MaskEditTextFactory;
 import com.vijay.jsonwizard.widgets.MultiSelectListFactory;
 import com.vijay.jsonwizard.widgets.NativeEditTextFactory;
 import com.vijay.jsonwizard.widgets.NativeRadioButtonFactory;
@@ -120,6 +121,7 @@ public class JsonFormInteractor {
         map = new HashMap<>();
         map.put(JsonFormConstants.SECTION_LABEL, new SectionFactory());
         map.put(JsonFormConstants.EDIT_TEXT, new EditTextFactory());
+        map.put(JsonFormConstants.MASK_EDIT_TEXT, new MaskEditTextFactory());
         map.put(JsonFormConstants.HIDDEN, new HiddenTextFactory());
         map.put(JsonFormConstants.LABEL, new LabelFactory());
         map.put(JsonFormConstants.CHECK_BOX, new CheckBoxFactory());

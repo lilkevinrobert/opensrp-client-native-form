@@ -1,5 +1,7 @@
 package com.vijay.jsonwizard.presenters;
 
+import static com.vijay.jsonwizard.utils.FormUtils.dpToPixels;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -12,11 +14,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatRadioButton;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -33,8 +30,15 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatRadioButton;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rey.material.widget.Button;
+import com.softmed.masked.MaskedEditText;
 import com.vijay.jsonwizard.R;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
 import com.vijay.jsonwizard.customviews.MaterialSpinner;
@@ -58,6 +62,7 @@ import com.vijay.jsonwizard.widgets.CountDownTimerFactory;
 import com.vijay.jsonwizard.widgets.EditTextFactory;
 import com.vijay.jsonwizard.widgets.GpsFactory;
 import com.vijay.jsonwizard.widgets.ImagePickerFactory;
+import com.vijay.jsonwizard.widgets.MaskEditTextFactory;
 import com.vijay.jsonwizard.widgets.MultiSelectListFactory;
 import com.vijay.jsonwizard.widgets.NativeEditTextFactory;
 import com.vijay.jsonwizard.widgets.NativeRadioButtonFactory;
@@ -81,8 +86,6 @@ import java.util.Set;
 import java.util.Stack;
 
 import timber.log.Timber;
-
-import static com.vijay.jsonwizard.utils.FormUtils.dpToPixels;
 
 /**
  * Created by vijay on 5/14/15.
@@ -349,6 +352,15 @@ public class JsonFormFragmentPresenter extends
                 }
                 return validationStatus;
             }
+        } else if (childAt instanceof MaskedEditText) {
+            MaskedEditText editText = (MaskedEditText) childAt;
+            ValidationStatus validationStatus = MaskEditTextFactory.validate(formFragmentView, editText);
+            if (!validationStatus.isValid()) {
+                if (requestFocus) {
+                    validationStatus.requestAttention();
+                }
+                return validationStatus;
+            }
         } else if (childAt instanceof MaterialEditText) {
             MaterialEditText editText = (MaterialEditText) childAt;
             ValidationStatus validationStatus = EditTextFactory.validate(formFragmentView, editText);
@@ -412,7 +424,7 @@ public class JsonFormFragmentPresenter extends
                 }
                 return validationStatus;
             }
-        } else if(childAt instanceof RelativeLayout
+        } else if (childAt instanceof RelativeLayout
                 && childAt.getTag(R.id.is_multiselect_relative_layout) != null &&
                 Boolean.TRUE.equals(childAt.getTag(R.id.is_multiselect_relative_layout))) {
             ValidationStatus validationStatus = MultiSelectListFactory

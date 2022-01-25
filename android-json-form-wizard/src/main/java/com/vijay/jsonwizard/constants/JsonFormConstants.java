@@ -231,6 +231,13 @@ public class JsonFormConstants {
     public static final String JSON_FILE_EXTENSION = ".json";
     public static final String CLIENT_FORM_ASSET_VERSION = "base version";
 
+
+    //Constants for Mask Edit Text
+    public static final String MASK_EDIT_TEXT = "mask_edit_text";
+    public static final String MASK = "mask";
+    public static final String ALLOWED_CHARS = "allowed_chars";
+    public static final String MASK_HINT = "mask_hint";
+
     public interface MultiSelectUtils {
         String IS_HEADER = "isHeader";
         String TEXT = "text";

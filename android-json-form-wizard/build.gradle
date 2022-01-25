@@ -29,7 +29,7 @@ android {
         targetSdkVersion androidTargetSdkVersion
         versionCode Integer.parseInt(project.VERSION_CODE)
         versionName project.VERSION_NAME
-        multiDexEnabled true
+        multiDexEnabled false
         testInstrumentationRunner "com.android.test.runner.MultiDexTestRunner"
 
         javaCompileOptions {
@@ -61,6 +61,10 @@ android {
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
     }
+
+    configurations.all {
+        resolutionStrategy.force 'com.android.support:design:28.0.0'
+    }
 }
 
 
@@ -87,7 +91,6 @@ dependencies {
     }
     implementation 'com.github.johnkil.print:print:1.3.1'
     implementation 'com.github.rey5137:material:1.2.5'
-    implementation 'org.smartregister:opensrp-client-materialedittext:2.1.6-SNAPSHOT'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation('com.github.ganfra:material-spinner:2.0.0') {
         exclude group: 'com.nineoldandroids', module: 'library'
@@ -134,6 +137,12 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'org.smartregister:opensrp-client-materialedittext:2.1.6-SNAPSHOT'
+
+    implementation('com.softmed.masked:MaskedEditText:1.0.5') {
+        exclude group: 'androidx.appcompat', module: 'appcompat'
+        exclude group: 'com.rengwuxian.materialedittext', module: 'library'
+    }
 
     // PowerMock
     def powerMockVersion = '2.0.4'
@@ -141,7 +150,7 @@ dependencies {
     testImplementation "org.powermock:powermock-module-junit4-rule:$powerMockVersion"
     testImplementation "org.powermock:powermock-api-mockito2:$powerMockVersion"
     testImplementation "org.powermock:powermock-classloading-xstream:$powerMockVersion"
-    implementation('com.github.raihan-mpower:FancyAlertDialog-Android:0.3') {
+    implementation('com.github.raihan-mpower:FancyAlertDialog-Android:0.3@aar') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
 
     }
