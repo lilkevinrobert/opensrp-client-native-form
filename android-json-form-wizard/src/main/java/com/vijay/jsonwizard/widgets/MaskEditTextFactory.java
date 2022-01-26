@@ -160,11 +160,6 @@ public class MaskEditTextFactory implements FormWidgetFactory {
         editText.setTag(R.id.type, jsonObject.getString(JsonFormConstants.TYPE));
         editText.setTag(R.id.address, stepName + ":" + jsonObject.getString(JsonFormConstants.KEY));
 
-        if (!TextUtils.isEmpty(jsonObject.optString(JsonFormConstants.VALUE))) {
-            editText.setText(jsonObject.optString(JsonFormConstants.VALUE));
-            editText.setSelection(editText.getText().length());
-        }
-
 
         if (jsonObject.has(JsonFormConstants.HINT)) {
             editText.setFloatingLabelText(jsonObject.getString(JsonFormConstants.HINT));
@@ -205,6 +200,10 @@ public class MaskEditTextFactory implements FormWidgetFactory {
 
         editText.setSingleLine(false);
         editText.setText("");
+        if (!TextUtils.isEmpty(jsonObject.optString(JsonFormConstants.VALUE))) {
+            editText.setText(jsonObject.optString(JsonFormConstants.VALUE));
+            editText.setSelection(editText.getText().length());
+        }
         editText.addTextChangedListener(new MaskEditTextTextWatcher(stepName, formFragment, editText));
         attachRefreshLogic(context, jsonObject, editText);
     }
