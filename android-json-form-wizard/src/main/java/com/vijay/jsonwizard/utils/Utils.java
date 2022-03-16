@@ -353,10 +353,17 @@ public class Utils {
                     for (String conditionKey : conditionKeys) {
                         strCondition = strCondition.replace(conditionKey, conditionKey + "_" + uniqueId);
                     }
+
+                    String strAction = ((ArrayList<String>) map.get(RuleConstant.ACTIONS)).get(0);
+                    List<String> actionKeys = getConditionKeys(strAction);
+                    for (String actionKey : actionKeys) {
+                        strAction = strAction.replace(actionKey, actionKey + "_" + uniqueId);
+                    }
+
                     jsonRulesDynamicObject.put(RuleConstant.NAME, String.valueOf(map.get(RuleConstant.NAME)).concat("_").concat(uniqueId));
                     jsonRulesDynamicObject.put(RuleConstant.DESCRIPTION, String.valueOf(map.get(RuleConstant.DESCRIPTION)).concat("_").concat(uniqueId));
                     jsonRulesDynamicObject.put(RuleConstant.PRIORITY, map.get(RuleConstant.PRIORITY));
-                    jsonRulesDynamicObject.put(RuleConstant.ACTIONS, ((ArrayList<String>) map.get(RuleConstant.ACTIONS)).get(0));
+                    jsonRulesDynamicObject.put(RuleConstant.ACTIONS, strAction);
                     jsonRulesDynamicObject.put(RuleConstant.CONDITION, String.valueOf(strCondition));
                     jsonArrayRules.put(jsonRulesDynamicObject);
                 }
