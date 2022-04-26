@@ -96,4 +96,8 @@ public class RulesEngineHelper {
         return "";
     }
 
+    public long getTimeInMillis() {
+        return rulesEngineDateUtil.getTimeInMillis();
+    }
+
 }
