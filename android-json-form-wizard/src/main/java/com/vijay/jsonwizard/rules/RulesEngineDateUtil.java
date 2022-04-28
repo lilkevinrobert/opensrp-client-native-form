@@ -1,5 +1,7 @@
 package com.vijay.jsonwizard.rules;
 
+import static com.vijay.jsonwizard.utils.FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN;
+
 import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -15,8 +17,11 @@ import org.joda.time.Months;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,11 +54,11 @@ public class RulesEngineDateUtil {
 
     public String getDOBFromAge(Integer age) {
         return (new LocalDate()).withMonthOfYear(1).withDayOfMonth(1).minusYears(age)
-                .toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
+                .toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     public String getDateToday() {
-        return (new LocalDate()).toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
+        return (new LocalDate()).toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     public String getDateTimeToday() {
@@ -122,7 +127,7 @@ public class RulesEngineDateUtil {
      * @return String with date
      */
     public String addDuration(String durationString) {
-        return addDuration((new LocalDate()).toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
+        return addDuration((new LocalDate()).toString(NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
     }
 
     /**
@@ -155,7 +160,7 @@ public class RulesEngineDateUtil {
             }
         }
 
-        return date.toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
+        return date.toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     @NonNull
@@ -174,7 +179,7 @@ public class RulesEngineDateUtil {
      * @return String with date
      */
     public String subtractDuration(String durationString) {
-        return subtractDuration((new LocalDate()).toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
+        return subtractDuration((new LocalDate()).toString(NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
     }
 
     /**
@@ -209,7 +214,7 @@ public class RulesEngineDateUtil {
             }
         }
 
-        return date.toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
+        return date.toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     public String minDate(String minimumDate) {
@@ -252,7 +257,14 @@ public class RulesEngineDateUtil {
     }
 
     public long getTimeInMillis() {
-        return DateTimeUtils.currentTimeMillis();
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                NATIIVE_FORM_DATE_FORMAT_PATTERN, Locale.getDefault());
+        try {
+            return dateFormat.parse(getDateToday()).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return Calendar.getInstance().getTimeInMillis();
     }
 
 }
