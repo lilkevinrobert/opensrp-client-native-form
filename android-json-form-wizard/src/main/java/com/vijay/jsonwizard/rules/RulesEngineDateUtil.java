@@ -7,6 +7,7 @@ import com.vijay.jsonwizard.domain.Form;
 import com.vijay.jsonwizard.utils.FormUtils;
 import com.vijay.jsonwizard.utils.Utils;
 
+import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -251,7 +252,7 @@ public class RulesEngineDateUtil {
     }
 
     public long getTimeInMillis() {
-        return System.currentTimeMillis();
+        return DateTimeUtils.currentTimeMillis();
     }
 
 }
