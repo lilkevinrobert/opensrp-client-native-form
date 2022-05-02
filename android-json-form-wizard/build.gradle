@@ -139,7 +139,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.0'
     implementation 'org.smartregister:opensrp-client-materialedittext:2.1.6-SNAPSHOT'
 
-    implementation('com.softmed.masked:MaskedEditText:1.0.5') {
+    implementation('io.github.softmedtanzania:maskededittext:1.0.5') {
         exclude group: 'androidx.appcompat', module: 'appcompat'
         exclude group: 'com.rengwuxian.materialedittext', module: 'library'
     }
