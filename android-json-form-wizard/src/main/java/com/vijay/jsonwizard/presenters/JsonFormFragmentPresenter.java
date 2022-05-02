@@ -38,7 +38,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.rey.material.widget.Button;
-import com.softmed.masked.MaskedEditText;
+import io.github.softmedtanzania.MaskedEditText;
 import com.vijay.jsonwizard.R;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
 import com.vijay.jsonwizard.customviews.MaterialSpinner;

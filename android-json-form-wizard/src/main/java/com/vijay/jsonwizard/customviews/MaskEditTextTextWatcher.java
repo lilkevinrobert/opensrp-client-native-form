@@ -5,7 +5,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 
-import com.softmed.masked.MaskedEditText;
+import io.github.softmedtanzania.MaskedEditText;
 import com.vijay.jsonwizard.R;
 import com.vijay.jsonwizard.exceptions.JsonFormRuntimeException;
 import com.vijay.jsonwizard.fragments.JsonFormFragment;

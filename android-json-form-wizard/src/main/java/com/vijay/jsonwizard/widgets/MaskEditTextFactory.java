@@ -27,7 +27,7 @@ import android.widget.RelativeLayout;
 import com.rengwuxian.materialedittext.validation.METValidator;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 import com.rey.material.util.ViewUtil;
-import com.softmed.masked.MaskedEditText;
+import io.github.softmedtanzania.MaskedEditText;
 import com.vijay.jsonwizard.R;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
 import com.vijay.jsonwizard.customviews.MaskEditTextTextWatcher;
