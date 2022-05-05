@@ -42,6 +42,7 @@ android {
                 includeCompileClasspath = true
             }
         }
+        project.archivesBaseName = "opensrp-client-native-form"
     }
 
     buildTypes {
