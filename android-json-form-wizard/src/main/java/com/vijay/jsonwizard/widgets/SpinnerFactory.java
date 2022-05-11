@@ -2,7 +2,6 @@ package com.vijay.jsonwizard.widgets;
 
 import android.content.Context;
 import android.graphics.Color;
-import androidx.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -13,6 +12,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import androidx.annotation.NonNull;
 
 import com.rey.material.util.ViewUtil;
 import com.vijay.jsonwizard.R;
@@ -168,10 +169,11 @@ public class SpinnerFactory extends BaseFactory {
             }
         }
 
-        if (values != null && indexToSelect!= -1) {
+        if (values != null) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.native_form_simple_list_item_1, values);
             spinner.setAdapter(adapter);
-            spinner.setSelection(indexToSelect + 1, true);
+            if (indexToSelect != -1)
+                spinner.setSelection(indexToSelect + 1, true);
             spinner.setOnItemSelectedListener(listener);
         }
         ((JsonApi) context).addFormDataView(spinner);
