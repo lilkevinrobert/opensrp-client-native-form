@@ -23,8 +23,9 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
-import androidx.core.app.ActivityCompat;
 import android.telephony.TelephonyManager;
+
+import androidx.core.app.ActivityCompat;
 
 import com.vijay.jsonwizard.interfaces.JsonApi;
 import com.vijay.jsonwizard.interfaces.OnActivityRequestPermissionResultListener;
@@ -55,11 +56,13 @@ public class PropertyManager {
     public PropertyManager(Context context) {
         mContext = context;
         mProperties = new HashMap<>();
-        grantPhoneStatePermission();
-        handleOnRequestPermissionResults();
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE)
-                == PackageManager.PERMISSION_GRANTED) {
-           addPhoneProperties();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            grantPhoneStatePermission();
+            handleOnRequestPermissionResults();
+            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                addPhoneProperties();
+            }
         }
     }
 
