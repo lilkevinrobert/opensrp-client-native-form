@@ -1,5 +1,9 @@
 package com.vijay.jsonwizard.activities;
 
+import static android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS;
+import static com.vijay.jsonwizard.utils.FormUtils.getCheckboxValueJsonArray;
+import static com.vijay.jsonwizard.utils.FormUtils.getCurrentCheckboxValues;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -14,11 +18,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.core.util.Pair;
-import androidx.appcompat.widget.AppCompatRadioButton;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -36,6 +35,12 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatRadioButton;
+import androidx.core.app.ActivityCompat;
+import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -101,10 +106,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import timber.log.Timber;
-
-import static android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS;
-import static com.vijay.jsonwizard.utils.FormUtils.getCheckboxValueJsonArray;
-import static com.vijay.jsonwizard.utils.FormUtils.getCurrentCheckboxValues;
 
 public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
 
@@ -1250,7 +1251,7 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
                     for (int i = 0; i < constraint.length(); i++) {
                         JSONObject curConstraint = constraint.getJSONObject(i);
                         if (address.length == 2) {
-                            String value = String.valueOf(getValueFromAddress(address, popup).get(JsonFormConstants.VALUE));
+                            String value = getValueFromAddress(address, popup).get(JsonFormConstants.VALUE);
                             errorMessage = enforceConstraint(value, curView, curConstraint);
                             if (errorMessage != null) break;
                         }
@@ -1807,7 +1808,7 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
                 }
                 return false;
             } else {
-                String curValue = String.valueOf(curValueMap.get(JsonFormConstants.VALUE));
+                String curValue = curValueMap.get(JsonFormConstants.VALUE);
                 return doComparison(curValue != null ? curValue : "", curRelevance);
             }
         }
