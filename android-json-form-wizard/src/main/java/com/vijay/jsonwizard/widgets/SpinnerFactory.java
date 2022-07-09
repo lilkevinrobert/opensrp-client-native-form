@@ -2,6 +2,8 @@ package com.vijay.jsonwizard.widgets;
 
 import android.content.Context;
 import android.graphics.Color;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -12,8 +14,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
-import androidx.annotation.NonNull;
 
 import com.rey.material.util.ViewUtil;
 import com.vijay.jsonwizard.R;
@@ -26,6 +26,7 @@ import com.vijay.jsonwizard.utils.FormUtils;
 import com.vijay.jsonwizard.utils.ValidationStatus;
 import com.vijay.jsonwizard.views.JsonFormFragmentView;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,7 +110,7 @@ public class SpinnerFactory extends BaseFactory {
         String constraints = jsonObject.optString(JsonFormConstants.CONSTRAINTS);
         String calculations = jsonObject.optString(JsonFormConstants.CALCULATION);
 
-        MaterialSpinner spinner = spinnerRelativeLayout.findViewById(R.id.material_spinner);
+        MaterialSpinner spinner = getMaterialSpinner(spinnerRelativeLayout);
         ImageView spinnerInfoIconImageView = spinnerRelativeLayout.findViewById(R.id.spinner_info_icon);
         ImageView editButton = spinnerRelativeLayout.findViewById(R.id.spinner_edit_button);
         FormUtils.setEditButtonAttributes(jsonObject, spinner, editButton, listener);
@@ -172,8 +173,7 @@ public class SpinnerFactory extends BaseFactory {
         if (values != null) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.native_form_simple_list_item_1, values);
             spinner.setAdapter(adapter);
-            if (indexToSelect != -1)
-                spinner.setSelection(indexToSelect + 1, true);
+            spinner.setSelection(indexToSelect + 1, true);
             spinner.setOnItemSelectedListener(listener);
         }
         ((JsonApi) context).addFormDataView(spinner);
@@ -230,6 +230,16 @@ public class SpinnerFactory extends BaseFactory {
     public Set<String> getCustomTranslatableWidgetFields() {
         Set<String> customTranslatableWidgetFields = new HashSet<>();
         customTranslatableWidgetFields.add(JsonFormConstants.OPTIONS_FIELD_NAME + "." + JsonFormConstants.TEXT);
+        customTranslatableWidgetFields.add(JsonFormConstants.VALUES);
+        customTranslatableWidgetFields.add(JsonFormConstants.LABEL_INFO_TITLE);
+        customTranslatableWidgetFields.add(JsonFormConstants.LABEL_INFO_TEXT);
+        customTranslatableWidgetFields.add(JsonFormConstants.DYNAMIC_LABEL_INFO);
         return customTranslatableWidgetFields;
+    }
+
+    @NotNull
+    @VisibleForTesting
+    public MaterialSpinner getMaterialSpinner(View view) {
+        return view.findViewById(R.id.material_spinner);
     }
 }

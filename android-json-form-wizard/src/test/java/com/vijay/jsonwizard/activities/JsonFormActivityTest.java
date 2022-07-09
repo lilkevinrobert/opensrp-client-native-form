@@ -1,19 +1,30 @@
 package com.vijay.jsonwizard.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import androidx.core.util.Pair;
 import androidx.appcompat.widget.AppCompatRadioButton;
 import android.text.Html;
 import android.text.Spanned;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
+import com.rengwuxian.materialedittext.MaterialEditText;
+import com.rey.material.util.ViewUtil;
 import com.vijay.jsonwizard.NativeFormLibrary;
 import com.vijay.jsonwizard.R;
+import com.vijay.jsonwizard.TestConstants;
 import com.vijay.jsonwizard.TestUtils;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
 import com.vijay.jsonwizard.domain.Form;
+import com.vijay.jsonwizard.event.RefreshExpansionPanelEvent;
+import com.vijay.jsonwizard.fragments.JsonFormFragment;
 import com.vijay.jsonwizard.utils.FormUtils;
+import com.vijay.jsonwizard.utils.Utils;
 
 import org.jeasy.rules.api.Facts;
 import org.json.JSONArray;
@@ -22,13 +33,18 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.util.ReflectionHelpers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -48,11 +64,26 @@ public class JsonFormActivityTest extends BaseActivityTest {
         MockitoAnnotations.initMocks(this);
         Intent intent = new Intent();
         intent.putExtra(JsonFormConstants.JSON_FORM_KEY.JSON, DUMMY_JSON_FORM_STRING);
-        controller = Robolectric.buildActivity(JsonFormActivity.class, intent).create().start();
-        activity = controller.get();
+        activity = getActivityWithIntent(intent);
         activity.getmJSONObject().put(JsonFormConstants.SKIP_BLANK_STEPS, true);
 
         Assert.assertNotNull(activity);
+    }
+
+    @Test
+    public void setmJsonObjectShouldSkipMissingStep() throws JSONException {
+        activity = Mockito.spy(activity);
+        Mockito.doNothing().when(activity).refreshHiddenViews(ArgumentMatchers.anyBoolean());
+        activity.getFormFieldsMap().clear();
+        ((JsonFormFragment) activity.getSupportFragmentManager().findFragmentById(R.id.container)).setmJsonApi(activity);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(JsonFormConstants.COUNT, 1);
+
+        activity.setmJSONObject(jsonObject);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertTrue(activity.getFormFieldsMap().isEmpty());
     }
 
     @Test
@@ -106,7 +137,7 @@ public class JsonFormActivityTest extends BaseActivityTest {
 
         Intent intent = new Intent();
         intent.putExtra(JsonFormConstants.JSON_FORM_KEY.JSON, inputJsonForm);
-        intent.putExtra(JsonFormConstants.PERFORM_FORM_TRANSLATION,false);
+        intent.putExtra(JsonFormConstants.PERFORM_FORM_TRANSLATION, false);
         NativeFormLibrary.getInstance().setPerformFormTranslation(true);
         Locale.setDefault(new Locale("en", "US"));
         controller = Robolectric.buildActivity(JsonFormActivity.class, intent).create().start();
@@ -124,7 +155,7 @@ public class JsonFormActivityTest extends BaseActivityTest {
 
         Intent intent = new Intent();
         intent.putExtra(JsonFormConstants.JSON_FORM_KEY.JSON, interpolatedJsonForm);
-        intent.putExtra(JsonFormConstants.PERFORM_FORM_TRANSLATION,true);
+        intent.putExtra(JsonFormConstants.PERFORM_FORM_TRANSLATION, true);
         NativeFormLibrary.getInstance().setPerformFormTranslation(false);
         Locale.setDefault(new Locale("en", "US"));
         controller = Robolectric.buildActivity(JsonFormActivity.class, intent).create().start();
@@ -285,4 +316,139 @@ public class JsonFormActivityTest extends BaseActivityTest {
         Whitebox.invokeMethod(activity, "setReadOnlyRadioButtonOptions", radioGroup, true);
         Assert.assertFalse(appCompatRadioButton.isEnabled());
     }
+
+    @Test
+    public void testToggleViewVisibilityShouldMakeViewVisible() {
+        Intent intent = new Intent();
+        intent.putExtra(JsonFormConstants.JSON_FORM_KEY.JSON, TestConstants.BASIC_FORM);
+        activity = getActivityWithIntent(intent);
+        int id = ViewUtil.generateViewId();
+        LinearLayout rootLayout = new LinearLayout(activity.getApplicationContext());
+        MaterialEditText view = Mockito.spy(new MaterialEditText(activity.getApplicationContext()));
+        view.setId(id);
+        rootLayout.addView(view);
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(id);
+        view.setTag(R.id.canvas_ids, jsonArray.toString());
+        view.setTag(R.id.address, "step1:user_last_name");
+        activity.toggleViewVisibility(view, true, false);
+        Mockito.verify(view, Mockito.times(1)).setVisibility(Mockito.eq(View.VISIBLE));
+        Mockito.verify(view, Mockito.times(3)).setFocusable(Mockito.eq(true));
+        Mockito.verify(view, Mockito.times(2)).setFocusableInTouchMode(Mockito.eq(true));
+        Mockito.verify(view, Mockito.times(3)).setEnabled(Mockito.eq(true));
+        Mockito.verify(view, Mockito.times(1)).invalidate();
+        Mockito.verify(view, Mockito.times(1))
+                .setTag(Mockito.eq(R.id.relevance_decided), Mockito.eq(true));
+    }
+
+    @Test
+    public void testToggleViewVisibilityShouldMakeViewInVisible() {
+        Intent intent = new Intent();
+        intent.putExtra(JsonFormConstants.JSON_FORM_KEY.JSON, TestConstants.BASIC_FORM);
+        activity = getActivityWithIntent(intent);
+        int id = ViewUtil.generateViewId();
+        LinearLayout rootLayout = new LinearLayout(activity.getApplicationContext());
+        MaterialEditText view = Mockito.spy(new MaterialEditText(activity.getApplicationContext()));
+        view.setId(id);
+        rootLayout.addView(view);
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(id);
+        view.setTag(R.id.canvas_ids, jsonArray.toString());
+        view.setTag(R.id.address, "step1:user_last_name");
+        activity.toggleViewVisibility(view, false, false);
+        Mockito.verify(view, Mockito.times(1)).setVisibility(Mockito.eq(View.GONE));
+        Mockito.verify(view, Mockito.times(2)).setFocusable(Mockito.eq(false));
+        Mockito.verify(view, Mockito.times(2)).setFocusableInTouchMode(Mockito.eq(false));
+        Mockito.verify(view, Mockito.times(3)).setEnabled(Mockito.eq(false));
+        Mockito.verify(view, Mockito.times(1)).invalidate();
+        Mockito.verify(view, Mockito.times(1))
+                .setTag(Mockito.eq(R.id.relevance_decided), Mockito.eq(false));
+    }
+
+    private JsonFormActivity getActivityWithIntent(Intent intent) {
+        controller = Robolectric.buildActivity(JsonFormActivity.class, intent).create().start();
+        return controller.get();
+    }
+
+    @Test
+    public void testRefreshExpansionPanelShouldInvokeExpectedMethods() throws JSONException {
+        activity = Mockito.spy(activity);
+
+        Utils mockUtils = Mockito.mock(Utils.class);
+        FormUtils mockFormUtils = Mockito.mock(FormUtils.class);
+
+        ReflectionHelpers.setField(activity, "formUtils", mockFormUtils);
+        ReflectionHelpers.setField(activity, "utils", mockUtils);
+
+        JSONArray jsonArray = new JSONArray();
+        LinearLayout linearLayout = new LinearLayout(RuntimeEnvironment.application);
+        RefreshExpansionPanelEvent event = new RefreshExpansionPanelEvent(jsonArray, linearLayout);
+
+        //Layout
+        RelativeLayout layoutHeader = new RelativeLayout(activity);
+        ImageView status = new ImageView(activity);
+        status.setId(R.id.statusImageView);
+        layoutHeader.addView(status, 0);
+        linearLayout.addView(layoutHeader);
+
+        LinearLayout contentLayout = (new LinearLayout(activity));
+        linearLayout.addView(contentLayout, 1);
+        LinearLayout mainContentView = new LinearLayout(activity);
+        mainContentView.setId(R.id.contentView);
+        contentLayout.addView(mainContentView);
+
+        LinearLayout buttonLayout = (new LinearLayout(activity));
+        buttonLayout.setId(R.id.accordion_bottom_navigation);
+        contentLayout.addView(buttonLayout);
+
+        Button undoButton = new Button(activity);
+        undoButton.setId(R.id.undo_button);
+        buttonLayout.addView(undoButton);
+        //
+
+        List<String> values = Arrays.asList("Done", "Not Done");
+        Mockito.doReturn(values)
+                .when(mockUtils)
+                .createExpansionPanelChildren(ArgumentMatchers.any(JSONArray.class));
+
+        activity.refreshExpansionPanel(event);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Mockito.verify(mockFormUtils)
+                .updateExpansionPanelRecyclerView(ArgumentMatchers.eq(values), ArgumentMatchers.eq(status), ArgumentMatchers.any(Context.class));
+
+        Mockito.verify(mockFormUtils)
+                .addValuesDisplay(ArgumentMatchers.eq(values), ArgumentMatchers.eq(mainContentView), ArgumentMatchers.any(Context.class));
+
+        Mockito.verify(mockUtils)
+                .enableExpansionPanelViews(ArgumentMatchers.eq(linearLayout));
+    }
+    @Test
+    public void testGetRelevanceAddressReturnsExpectedAddressAndRelevancePair() throws JSONException {
+        View view = new View(activity.getBaseContext());
+        JSONObject curRelevance = new JSONObject();
+        try {
+          curRelevance = new JSONObject("{ex-checkbox:[{\"or\":[\"other\"]}]}}");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        view.setTag(R.id.relevance,
+                "{\"step1:medications\":{ex-checkbox:[{\"or\":[\"other\"]}]}}");
+        view.setTag(R.id.key, JsonFormConstants.SIMPRINTS_OPTION_REGISTER);
+        view.setTag(R.id.address, "step1:medications_other");
+        view.setTag(R.id.extraPopup, false);
+        String[] address = new String[]{"step1", "medications"};
+
+        Pair pair = new Pair<>(address, curRelevance);
+        Pair activityPair = activity.getRelevanceAddress(view, false);
+        // assert that the right relevance condition is returned
+        Assert.assertTrue(pair.second.toString().equals(activityPair.second.toString()));
+        String[] activityAddress = (String[]) pair.first;
+        // assert address array contains expected elements
+        Assert.assertTrue(address[0].equals(activityAddress[0]));
+        Assert.assertTrue(address[1].equals(activityAddress[1]));
+
+    }
+
 }

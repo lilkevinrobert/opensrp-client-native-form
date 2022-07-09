@@ -1,7 +1,5 @@
 package com.vijay.jsonwizard.rules;
 
-import static com.vijay.jsonwizard.utils.FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN;
-
 import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -54,11 +52,11 @@ public class RulesEngineDateUtil {
 
     public String getDOBFromAge(Integer age) {
         return (new LocalDate()).withMonthOfYear(1).withDayOfMonth(1).minusYears(age)
-                .toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
+                .toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     public String getDateToday() {
-        return (new LocalDate()).toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
+        return (new LocalDate()).toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     public String getDateTimeToday() {
@@ -127,7 +125,7 @@ public class RulesEngineDateUtil {
      * @return String with date
      */
     public String addDuration(String durationString) {
-        return addDuration((new LocalDate()).toString(NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
+        return addDuration((new LocalDate()).toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
     }
 
     /**
@@ -160,7 +158,7 @@ public class RulesEngineDateUtil {
             }
         }
 
-        return date.toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
+        return date.toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     @NonNull
@@ -179,7 +177,7 @@ public class RulesEngineDateUtil {
      * @return String with date
      */
     public String subtractDuration(String durationString) {
-        return subtractDuration((new LocalDate()).toString(NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
+        return subtractDuration((new LocalDate()).toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
     }
 
     /**
@@ -214,7 +212,7 @@ public class RulesEngineDateUtil {
             }
         }
 
-        return date.toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
+        return date.toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     public String minDate(String minimumDate) {
