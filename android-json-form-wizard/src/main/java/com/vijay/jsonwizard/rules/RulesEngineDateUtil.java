@@ -1,15 +1,13 @@
 package com.vijay.jsonwizard.rules;
 
-import static com.vijay.jsonwizard.utils.FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.vijay.jsonwizard.domain.Form;
 import com.vijay.jsonwizard.utils.FormUtils;
 import com.vijay.jsonwizard.utils.Utils;
 
-import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -54,11 +52,11 @@ public class RulesEngineDateUtil {
 
     public String getDOBFromAge(Integer age) {
         return (new LocalDate()).withMonthOfYear(1).withDayOfMonth(1).minusYears(age)
-                .toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
+                .toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     public String getDateToday() {
-        return (new LocalDate()).toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
+        return (new LocalDate()).toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     public String getDateTimeToday() {
@@ -74,7 +72,7 @@ public class RulesEngineDateUtil {
      * @return String
      */
     public String getDuration(String date, String endDate) {
-        return Utils.getDuration(Utils.getDateFormattedForCalculation(date,  Form.getDatePickerDisplayFormat()),
+        return Utils.getDuration(Utils.getDateFormattedForCalculation(date, Form.getDatePickerDisplayFormat()),
                 endDate);
     }
 
@@ -86,7 +84,7 @@ public class RulesEngineDateUtil {
     }
 
     public String formatDate(String dateString, String duration) {
-        LocalDate date = new LocalDate(Utils.reverseDateString(Utils.getDateFormattedForCalculation(dateString,  Form.getDatePickerDisplayFormat()), "-"));
+        LocalDate date = new LocalDate(Utils.reverseDateString(Utils.getDateFormattedForCalculation(dateString, Form.getDatePickerDisplayFormat()), "-"));
         int result = 0;
         String cleanDuration = duration.trim().toLowerCase();
 
@@ -127,7 +125,7 @@ public class RulesEngineDateUtil {
      * @return String with date
      */
     public String addDuration(String durationString) {
-        return addDuration((new LocalDate()).toString(NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
+        return addDuration((new LocalDate()).toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
     }
 
     /**
@@ -136,7 +134,7 @@ public class RulesEngineDateUtil {
      * @return String with date
      */
     public String addDuration(String dateString, String durationString) {
-        LocalDate date = new LocalDate(Utils.reverseDateString(Utils.getDateFormattedForCalculation(dateString,  Form.getDatePickerDisplayFormat()), "-"));
+        LocalDate date = new LocalDate(Utils.reverseDateString(Utils.getDateFormattedForCalculation(dateString, Form.getDatePickerDisplayFormat()), "-"));
         String[] durationArr = getDurationArray(durationString);
 
         for (String duration : durationArr) {
@@ -160,7 +158,7 @@ public class RulesEngineDateUtil {
             }
         }
 
-        return date.toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
+        return date.toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     @NonNull
@@ -179,7 +177,7 @@ public class RulesEngineDateUtil {
      * @return String with date
      */
     public String subtractDuration(String durationString) {
-        return subtractDuration((new LocalDate()).toString(NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
+        return subtractDuration((new LocalDate()).toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN), durationString);
     }
 
     /**
@@ -214,7 +212,7 @@ public class RulesEngineDateUtil {
             }
         }
 
-        return date.toString(NATIIVE_FORM_DATE_FORMAT_PATTERN);
+        return date.toString(FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN);
     }
 
     public String minDate(String minimumDate) {
@@ -258,7 +256,7 @@ public class RulesEngineDateUtil {
 
     public long getTimeInMillis() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
-                NATIIVE_FORM_DATE_FORMAT_PATTERN, Locale.getDefault());
+                FormUtils.NATIIVE_FORM_DATE_FORMAT_PATTERN, Locale.getDefault());
         try {
             return dateFormat.parse(getDateToday()).getTime();
         } catch (ParseException e) {

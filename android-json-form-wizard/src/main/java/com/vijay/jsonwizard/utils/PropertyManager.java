@@ -23,9 +23,8 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
-
 import androidx.core.app.ActivityCompat;
+import android.telephony.TelephonyManager;
 
 import com.vijay.jsonwizard.interfaces.JsonApi;
 import com.vijay.jsonwizard.interfaces.OnActivityRequestPermissionResultListener;

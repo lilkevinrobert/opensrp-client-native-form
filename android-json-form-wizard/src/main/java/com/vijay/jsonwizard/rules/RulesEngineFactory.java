@@ -18,6 +18,7 @@ import org.jeasy.rules.core.DefaultRulesEngine;
 import org.jeasy.rules.core.RulesEngineParameters;
 import org.jeasy.rules.mvel.MVELRule;
 import org.jeasy.rules.mvel.MVELRuleFactory;
+import org.jeasy.rules.support.YamlRuleDefinitionReader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.smartregister.client.utils.contract.ClientFormContract;
@@ -39,8 +40,9 @@ public class RulesEngineFactory implements RuleListener {
     private Rules rules;
     private String selectedRuleName;
     private Gson gson;
-    private Map<String, String> globalValues;
     private RulesEngineHelper rulesEngineHelper;
+    private Facts globalFacts;
+    private MVELRuleFactory mvelRuleFactory;
 
     public RulesEngineFactory(Context context, Map<String, String> globalValues) {
         this.context = context;
@@ -49,20 +51,27 @@ public class RulesEngineFactory implements RuleListener {
         ((DefaultRulesEngine) this.defaultRulesEngine).registerRuleListener(this);
         this.ruleMap = new HashMap<>();
         gson = new Gson();
-        this.globalValues = globalValues;
         this.rulesEngineHelper = new RulesEngineHelper();
+        this.mvelRuleFactory = new MVELRuleFactory(new YamlRuleDefinitionReader());
 
+
+        if (globalValues != null) {
+            globalFacts = new Facts();
+            for (Map.Entry<String, String> entry : globalValues.entrySet()) {
+                globalFacts.put(RuleConstant.PREFIX.GLOBAL + entry.getKey(), getValue(entry.getValue()));
+            }
+        }
     }
 
     public RulesEngineFactory() {
     }
 
-    private Rules getDynamicRulesFromJsonArray(JSONArray jsonArray) {
+    private Rules getDynamicRulesFromJsonArray(@NonNull JSONArray jsonArray, @NonNull String type) {
         try {
             Rules rules = new Rules();
             JSONObject keyJsonObject = Utils.getJsonObjectFromJsonArray(JsonFormConstants.KEY, jsonArray);
             if (keyJsonObject != null) {
-                String key = keyJsonObject.optString(JsonFormConstants.KEY);
+                String key = type + "/" + keyJsonObject.optString(JsonFormConstants.KEY);
                 if (!ruleMap.containsKey(key)) {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonRuleObject = jsonArray.optJSONObject(i);
@@ -99,6 +108,7 @@ public class RulesEngineFactory implements RuleListener {
         }
     }
 
+
     public boolean getRelevance(@NonNull Facts relevanceFact, @NonNull String ruleFilename) {
 
         Facts facts = initializeFacts(relevanceFact);
@@ -118,7 +128,7 @@ public class RulesEngineFactory implements RuleListener {
 
         facts.put(RuleConstant.IS_RELEVANT, false);
 
-        rules = getDynamicRulesFromJsonArray(rulesStrObject);
+        rules = getDynamicRulesFromJsonArray(rulesStrObject, JsonFormConstants.RELEVANCE);
 
         processDefaultRules(rules, facts);
 
@@ -126,20 +136,16 @@ public class RulesEngineFactory implements RuleListener {
     }
 
     protected Facts initializeFacts(Facts facts) {
-
-        if (globalValues != null) {
-            for (Map.Entry<String, String> entry : globalValues.entrySet()) {
-                facts.put(RuleConstant.PREFIX.GLOBAL + entry.getKey(), getValue(entry.getValue()));
-            }
-
-            facts.asMap().putAll(globalValues);
+        if (globalFacts != null) {
+            facts.asMap().putAll(globalFacts.asMap());
         }
         selectedRuleName = facts.get(RuleConstant.SELECTED_RULE);
         facts.put("helper", rulesEngineHelper);
         return facts;
     }
 
-    private Rules getRulesFromAsset(String fileName) {
+
+    public Rules getRulesFromAsset(String fileName) {
 
         try {
             if (!ruleMap.containsKey(fileName)) {
@@ -147,13 +153,13 @@ public class RulesEngineFactory implements RuleListener {
                 if (context instanceof ClientFormContract.View) {
                     try {
                         BufferedReader bufferedReader = ((ClientFormContract.View) context).getRules(context, fileName);
-                        ruleMap.put(fileName, MVELRuleFactory.createRulesFrom(bufferedReader));
+                        ruleMap.put(fileName, mvelRuleFactory.createRules(bufferedReader));
                     } catch (Exception ex) {
                         ((ClientFormContract.View) context).handleFormError(true, fileName);
                         return null;
                     }
                 } else {
-                    ruleMap.put(fileName,FileSourceFactoryHelper.getFileSource(JsonFormBaseActivity.DATA_SOURCE).getRulesFromFile(context, fileName));
+                    ruleMap.put(fileName, FileSourceFactoryHelper.getFileSource(JsonFormBaseActivity.DATA_SOURCE).getRulesFromFile(context, fileName));
                 }
             }
             return ruleMap.get(fileName);
@@ -209,7 +215,7 @@ public class RulesEngineFactory implements RuleListener {
 
         facts.put(RuleConstant.CALCULATION, false);
 
-        rules = getDynamicRulesFromJsonArray(rulesStrObject);
+        rules = getDynamicRulesFromJsonArray(rulesStrObject, JsonFormConstants.CALCULATION);
 
         processDefaultRules(rules, facts);
 

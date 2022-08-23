@@ -27,7 +27,6 @@ import android.widget.RelativeLayout;
 import com.rengwuxian.materialedittext.validation.METValidator;
 import com.rengwuxian.materialedittext.validation.RegexpValidator;
 import com.rey.material.util.ViewUtil;
-import io.github.softmedtanzania.MaskedEditText;
 import com.vijay.jsonwizard.R;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
 import com.vijay.jsonwizard.customviews.MaskEditTextTextWatcher;
@@ -57,7 +56,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import timber.log.Timber;
+import io.github.softmedtanzania.MaskedEditText;
 
 public class MaskEditTextFactory implements FormWidgetFactory {
     public static final int MIN_LENGTH = 0;
@@ -231,13 +230,15 @@ public class MaskEditTextFactory implements FormWidgetFactory {
     private void addLengthValidator(JSONObject jsonObject, MaskedEditText editText) throws JSONException {
         int minLength = MIN_LENGTH;
         int maxLength = MAX_LENGTH;
+        boolean isRequired = fieldIsRequired(jsonObject);
+
         JSONObject minLengthObject = jsonObject.optJSONObject(JsonFormConstants.V_MIN_LENGTH);
         if (minLengthObject != null) {
             String minLengthValue = minLengthObject.optString(JsonFormConstants.VALUE);
             if (!TextUtils.isEmpty(minLengthValue)) {
                 minLength = Integer.parseInt(minLengthValue);
                 editText.addValidator(new MinLengthValidator(minLengthObject.getString(JsonFormConstants.ERR),
-                        Integer.parseInt(minLengthValue)));
+                        Integer.parseInt(minLengthValue), isRequired));
             }
         }
 
@@ -247,7 +248,7 @@ public class MaskEditTextFactory implements FormWidgetFactory {
             if (!TextUtils.isEmpty(maxLengthValue)) {
                 maxLength = Integer.parseInt(maxLengthValue);
                 editText.addValidator(new MaxLengthValidator(maxLengthObject.getString(JsonFormConstants.ERR),
-                        Integer.parseInt(maxLengthValue)));
+                        Integer.parseInt(maxLengthValue), isRequired));
             }
         }
 
@@ -467,5 +468,10 @@ public class MaskEditTextFactory implements FormWidgetFactory {
         customTranslatableWidgetFields.add(JsonFormConstants.LABEL_INFO_TITLE);
         customTranslatableWidgetFields.add(JsonFormConstants.LABEL_INFO_TEXT);
         return customTranslatableWidgetFields;
+    }
+
+    private boolean fieldIsRequired(JSONObject jsonObject) throws JSONException {
+        JSONObject requiredObject = jsonObject.optJSONObject(JsonFormConstants.V_REQUIRED);
+        return requiredObject != null && requiredObject.getBoolean(JsonFormConstants.VALUE);
     }
 }
