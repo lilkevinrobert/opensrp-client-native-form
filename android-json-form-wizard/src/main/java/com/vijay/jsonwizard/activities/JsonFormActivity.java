@@ -1490,8 +1490,14 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
                         args[i] = valueMatcher.group(1);
                     } else {
                         try {
-                            args[i] = String.valueOf(
-                                    getValueFromAddress(curArg.split(":"), false).get(JsonFormConstants.VALUE));
+                            Facts facts = getValueFromAddress(curArg.split(":"), false);
+                            String stringValue;
+                            if (facts.get(JsonFormConstants.VALUE) instanceof String)
+                                stringValue = facts.get(JsonFormConstants.VALUE);
+                            else
+                                stringValue = String.valueOf(facts.get(JsonFormConstants.VALUE));
+
+                            args[i] = stringValue;
                         } catch (Exception e) {
                             Timber.e(e, "JsonFormActivity --> getFunctionArgs");
                         }
