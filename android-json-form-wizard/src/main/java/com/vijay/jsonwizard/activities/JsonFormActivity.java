@@ -316,6 +316,15 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
         initComparisons();
         Set<String> viewsIds = skipLogicDependencyMap.get(stepName + "_" + parentKey);
         if (parentKey == null || childKey == null) {
+            if (skipLogicViews.values().size() == 0) {
+                try {
+                    //Necessary to ensure that if there are any concurrent threads updating the skipLogicViews ConcurrentHashMap, the map is update before continuing
+                    //NOTE: Without this skipLogicViews might be empty sometime while values are being updated by a separate thread
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             for (View curView : skipLogicViews.values()) {
                 if (isForNextStep && isNextStepRelevant()) {
                     break;
