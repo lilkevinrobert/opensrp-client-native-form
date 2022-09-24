@@ -102,6 +102,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -127,6 +128,8 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
     private Map<String, Set<String>> skipLogicDependencyMap = new HashMap<>();
 
     private Map<String, Boolean> stepSkipLogicPresenceMap = new ConcurrentHashMap<>();
+
+    public static CountDownLatch latch;
 
     private boolean isNextStepRelevant;
 
@@ -316,14 +319,14 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
         initComparisons();
         Set<String> viewsIds = skipLogicDependencyMap.get(stepName + "_" + parentKey);
         if (parentKey == null || childKey == null) {
-            if (skipLogicViews.values().size() == 0) {
-                try {
+            try {
+                if (latch != null) {
                     //Necessary to ensure that if there are any concurrent threads updating the skipLogicViews ConcurrentHashMap, the map is update before continuing
-                    //NOTE: Without this skipLogicViews might be empty sometime while values are being updated by a separate thread
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    //NOTE: Without this skipLogicViews might be empty sometime while values are being updated on the UI thread
+                    latch.await();
                 }
+            } catch (InterruptedException e) {
+                Timber.e(e);
             }
             for (View curView : skipLogicViews.values()) {
                 if (isForNextStep && isNextStepRelevant()) {
