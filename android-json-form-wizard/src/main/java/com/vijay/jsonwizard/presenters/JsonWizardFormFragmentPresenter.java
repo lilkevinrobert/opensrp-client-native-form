@@ -3,9 +3,12 @@ package com.vijay.jsonwizard.presenters;
 import android.widget.LinearLayout;
 
 import com.vijay.jsonwizard.R;
+import com.vijay.jsonwizard.activities.JsonFormActivity;
 import com.vijay.jsonwizard.fragments.JsonFormFragment;
 import com.vijay.jsonwizard.fragments.JsonWizardFormFragment;
 import com.vijay.jsonwizard.interactors.JsonFormInteractor;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by keyman on 04/12/18.
@@ -23,9 +26,11 @@ public class JsonWizardFormFragmentPresenter extends JsonFormFragmentPresenter {
 
         boolean validateOnSubmit = validateOnSubmit();
         if (validateOnSubmit && getIncorrectlyFormattedFields().isEmpty()) {
+            JsonFormActivity.latch = new CountDownLatch(1);
             boolean isSkipped = executeRefreshLogicForNextStep();
             return !isSkipped && moveToNextWizardStep();
         } else if (isFormValid()) {
+            JsonFormActivity.latch = new CountDownLatch(1);
             boolean isSkipped = executeRefreshLogicForNextStep();
             return !isSkipped && moveToNextWizardStep();
         } else {

@@ -3,11 +3,12 @@ package com.vijay.jsonwizard.interactors;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.vijay.jsonwizard.R;
+import com.vijay.jsonwizard.activities.JsonFormActivity;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
 import com.vijay.jsonwizard.fragments.JsonFormFragment;
 import com.vijay.jsonwizard.interfaces.CommonListener;
@@ -245,6 +246,12 @@ public class JsonFormInteractor {
                 } catch (Exception e) {
                     Timber.e(e, "Exception encountered while creating form widget!");
                 }
+
+                //This decrements the latch countdown to zero used in allowing the background thread
+                // to wait for UI thread to finish fetching views and Updating the skipLogicViews
+                if (JsonFormActivity.latch != null) {
+                    JsonFormActivity.latch.countDown();
+                }
             }
         });
 //
@@ -282,7 +289,7 @@ public class JsonFormInteractor {
     }
 
     public void cleanUp() {
-        if(map.get(JsonFormConstants.NATIVE_RADIO_BUTTON) != null){
+        if (map.get(JsonFormConstants.NATIVE_RADIO_BUTTON) != null) {
             NativeRadioButtonFactory nativeRadioButtonFactory = (NativeRadioButtonFactory) map.get(JsonFormConstants.NATIVE_RADIO_BUTTON);
             nativeRadioButtonFactory.cleanUp();
         }
