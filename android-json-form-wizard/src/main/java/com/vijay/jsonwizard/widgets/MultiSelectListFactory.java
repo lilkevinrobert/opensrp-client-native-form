@@ -3,13 +3,6 @@ package com.vijay.jsonwizard.widgets;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +11,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.rey.material.util.ViewUtil;
 import com.vijay.jsonwizard.R;
@@ -57,6 +58,8 @@ public class MultiSelectListFactory implements FormWidgetFactory {
     private Context context;
     private JsonFormFragment jsonFormFragment;
     private static HashMap<String, MultiSelectListAccessory> multiSelectListAccessoryHashMap = new HashMap<>();
+    private Button btnMultiSelectAction;
+    private View separatorForBtnMultiSelectAction;
 
     @Override
     public List<View> getViewsFromJson(@NonNull String stepName, @NonNull Context context, @NonNull JsonFormFragment formFragment, @NonNull JSONObject jsonObject,
@@ -113,7 +116,7 @@ public class MultiSelectListFactory implements FormWidgetFactory {
     }
 
     public static ValidationStatus validate(JsonFormFragmentView fragmentView, RelativeLayout multiselectLayout) {
-        String error = (String)  multiselectLayout.getTag(R.id.error);
+        String error = (String) multiselectLayout.getTag(R.id.error);
         if (multiselectLayout.isEnabled() && error != null) {
             boolean isValid = performValidation(multiselectLayout);
             if (!isValid) {
@@ -357,6 +360,11 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         MultiSelectListUtils.writeToForm(key, jsonFormFragment, getMultiSelectListAccessoryHashMap());
     }
 
+    public void showBtnMultiSelectAction() {
+        btnMultiSelectAction.setVisibility(View.VISIBLE);
+        separatorForBtnMultiSelectAction.setVisibility(View.VISIBLE);
+    }
+
     public MultiSelectListSelectedAdapter getMultiSelectListSelectedAdapter(String key) {
         MultiSelectListAccessory multiSelectListAccessory = getMultiSelectListAccessoryHashMap().get(key);
         if (multiSelectListAccessory != null) {
@@ -383,7 +391,7 @@ public class MultiSelectListFactory implements FormWidgetFactory {
 
     protected RelativeLayout createSelectedRecyclerView(@NonNull Context context, String currentKey) {
         List<MultiSelectItem> multiSelectItems = prepareSelectedData();
-        MultiSelectListSelectedAdapter multiSelectListSelectedAdapter = new MultiSelectListSelectedAdapter(multiSelectItems,currentKey,  this);
+        MultiSelectListSelectedAdapter multiSelectListSelectedAdapter = new MultiSelectListSelectedAdapter(multiSelectItems, currentKey, this);
 
         MultiSelectListAccessory multiSelectListAccessory = getMultiSelectListAccessoryHashMap().get(currentAdapterKey);
         multiSelectListAccessory.setSelectedAdapter(multiSelectListSelectedAdapter);
@@ -410,11 +418,12 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         final RelativeLayout relativeLayout = (RelativeLayout) layoutInflater.inflate(R.layout.multi_select_list_action_layout, null);
         relativeLayout.setTag(R.id.key, currentAdapterKey);
-        Button btn_multi_select_action = relativeLayout.findViewById(R.id.btn_multi_select_action);
-        btn_multi_select_action.setText(jsonObject.optString(JsonFormConstants.MultiSelectUtils.BUTTON_TEXT));
-        btn_multi_select_action.setTypeface(Typeface.DEFAULT);
-        btn_multi_select_action.setTag(R.id.maxSelectable, jsonObject.optString(JsonFormConstants.MultiSelectUtils.MAX_SELECTABLE));
-        btn_multi_select_action.setOnClickListener(new View.OnClickListener() {
+        separatorForBtnMultiSelectAction = relativeLayout.findViewById(R.id.separator);
+        btnMultiSelectAction = relativeLayout.findViewById(R.id.btn_multi_select_action);
+        btnMultiSelectAction.setText(jsonObject.optString(JsonFormConstants.MultiSelectUtils.BUTTON_TEXT));
+        btnMultiSelectAction.setTypeface(Typeface.DEFAULT);
+        btnMultiSelectAction.setTag(R.id.maxSelectable, jsonObject.optString(JsonFormConstants.MultiSelectUtils.MAX_SELECTABLE));
+        btnMultiSelectAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String strMaxSelectable = (String) v.getTag(R.id.maxSelectable);
@@ -425,6 +434,13 @@ public class MultiSelectListFactory implements FormWidgetFactory {
                     List<MultiSelectItem> multiSelectItems = getMultiSelectListSelectedAdapter(currentAdapterKey).getData();
                     if ((multiSelectItems.size() >= maxSelectable) && !multiSelectItems.isEmpty()) {
                         return;
+                    }
+                    if (multiSelectItems.size() >= maxSelectable - 1) {
+                        v.setVisibility(View.GONE);
+                        separatorForBtnMultiSelectAction.setVisibility(View.GONE);
+                    } else {
+                        v.setVisibility(View.VISIBLE);
+                        separatorForBtnMultiSelectAction.setVisibility(View.VISIBLE);
                     }
                 }
                 updateListData(true, currentAdapterKey);
