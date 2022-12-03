@@ -354,6 +354,13 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         updateSelectedData(multiSelectItem, false, key);
         writeToForm(key);
         getAlertDialog(key).dismiss();
+
+        if (multiSelectItems.size() >= maxSelectable - 1) {
+            btnMultiSelectAction.setVisibility(View.GONE);
+            separatorForBtnMultiSelectAction.setVisibility(View.GONE);
+        } else {
+           showBtnMultiSelectAction();
+        }
     }
 
     public void writeToForm(String key) {
@@ -434,13 +441,6 @@ public class MultiSelectListFactory implements FormWidgetFactory {
                     List<MultiSelectItem> multiSelectItems = getMultiSelectListSelectedAdapter(currentAdapterKey).getData();
                     if ((multiSelectItems.size() >= maxSelectable) && !multiSelectItems.isEmpty()) {
                         return;
-                    }
-                    if (multiSelectItems.size() >= maxSelectable - 1) {
-                        v.setVisibility(View.GONE);
-                        separatorForBtnMultiSelectAction.setVisibility(View.GONE);
-                    } else {
-                        v.setVisibility(View.VISIBLE);
-                        separatorForBtnMultiSelectAction.setVisibility(View.VISIBLE);
                     }
                 }
                 updateListData(true, currentAdapterKey);
