@@ -26,11 +26,9 @@ public class JsonWizardFormFragmentPresenter extends JsonFormFragmentPresenter {
 
         boolean validateOnSubmit = validateOnSubmit();
         if (validateOnSubmit && getIncorrectlyFormattedFields().isEmpty()) {
-            JsonFormActivity.latch = new CountDownLatch(1);
             boolean isSkipped = executeRefreshLogicForNextStep();
             return !isSkipped && moveToNextWizardStep();
         } else if (isFormValid()) {
-            JsonFormActivity.latch = new CountDownLatch(1);
             boolean isSkipped = executeRefreshLogicForNextStep();
             return !isSkipped && moveToNextWizardStep();
         } else {

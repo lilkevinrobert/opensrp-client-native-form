@@ -246,12 +246,6 @@ public class JsonFormInteractor {
                 } catch (Exception e) {
                     Timber.e(e, "Exception encountered while creating form widget!");
                 }
-
-                //This decrements the latch countdown to zero used in allowing the background thread
-                // to wait for UI thread to finish fetching views and Updating the skipLogicViews
-                if (JsonFormActivity.latch != null) {
-                    JsonFormActivity.latch.countDown();
-                }
             }
         });
 //

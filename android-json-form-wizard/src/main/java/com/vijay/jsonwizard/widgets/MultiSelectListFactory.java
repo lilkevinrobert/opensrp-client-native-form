@@ -60,6 +60,8 @@ public class MultiSelectListFactory implements FormWidgetFactory {
     private static HashMap<String, MultiSelectListAccessory> multiSelectListAccessoryHashMap = new HashMap<>();
     private Button btnMultiSelectAction;
     private View separatorForBtnMultiSelectAction;
+    private int mMaxSelectable;
+    private List<MultiSelectItem> mMultiSelectItems;
 
     @Override
     public List<View> getViewsFromJson(@NonNull String stepName, @NonNull Context context, @NonNull JsonFormFragment formFragment, @NonNull JSONObject jsonObject,
@@ -355,11 +357,11 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         writeToForm(key);
         getAlertDialog(key).dismiss();
 
-        if (multiSelectItems.size() >= maxSelectable - 1) {
+        if (mMultiSelectItems.size() >= mMaxSelectable - 1) {
             btnMultiSelectAction.setVisibility(View.GONE);
             separatorForBtnMultiSelectAction.setVisibility(View.GONE);
         } else {
-           showBtnMultiSelectAction();
+            showBtnMultiSelectAction();
         }
     }
 
@@ -438,7 +440,9 @@ public class MultiSelectListFactory implements FormWidgetFactory {
                 int maxSelectable;
                 if (!TextUtils.isEmpty(strMaxSelectable)) {
                     maxSelectable = Integer.parseInt(strMaxSelectable);
+                    mMaxSelectable = maxSelectable;
                     List<MultiSelectItem> multiSelectItems = getMultiSelectListSelectedAdapter(currentAdapterKey).getData();
+                    mMultiSelectItems = multiSelectItems;
                     if ((multiSelectItems.size() >= maxSelectable) && !multiSelectItems.isEmpty()) {
                         return;
                     }
