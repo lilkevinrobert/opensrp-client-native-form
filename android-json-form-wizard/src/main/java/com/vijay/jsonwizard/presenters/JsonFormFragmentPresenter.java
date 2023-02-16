@@ -573,9 +573,9 @@ public class JsonFormFragmentPresenter extends
         boolean isSkipped = false;
         final String nextStep = getFormFragment().getJsonApi().nextStep();
         if (StringUtils.isNotBlank(nextStep)) {
+            cleanDataForNextStep();
             getmJsonFormInteractor().fetchFormElements(nextStep, getFormFragment(), getFormFragment().getJsonApi().getmJSONObject().optJSONObject(nextStep), getView().getCommonListener(), false);
             getFormFragment().getJsonApi().initializeDependencyMaps();
-            cleanDataForNextStep();
             getFormFragment().getJsonApi().invokeRefreshLogic(null, false, null, null, nextStep, true);
             if (!getFormFragment().getJsonApi().isNextStepRelevant()) {
                 Utils.checkIfStepHasNoSkipLogic(getFormFragment());

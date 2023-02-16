@@ -8,7 +8,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.vijay.jsonwizard.R;
-import com.vijay.jsonwizard.activities.JsonFormActivity;
 import com.vijay.jsonwizard.constants.JsonFormConstants;
 import com.vijay.jsonwizard.fragments.JsonFormFragment;
 import com.vijay.jsonwizard.interfaces.CommonListener;
@@ -78,9 +77,7 @@ public class JsonFormInteractor {
         registerWidgets();
         registerDefaultTranslatableFields();
         if (additionalWidgetsMap != null) {
-            for (Map.Entry<String, FormWidgetFactory> widgetFactoryEntry : additionalWidgetsMap.entrySet()) {
-                map.put(widgetFactoryEntry.getKey(), widgetFactoryEntry.getValue());
-            }
+            map.putAll(additionalWidgetsMap);
         }
     }
 
@@ -157,15 +154,18 @@ public class JsonFormInteractor {
 
     }
 
-    public List<View> fetchFormElements(String stepName, JsonFormFragment formFragment, JSONObject parentJson, CommonListener listener, Boolean popup) {
+    public List<View> fetchFormElements(String stepName, JsonFormFragment formFragment,
+                                        JSONObject parentJson, CommonListener listener, Boolean popup) {
         List<View> viewsFromJson = new ArrayList<>(5);
         try {
 
-            if (parentJson.has(JsonFormConstants.SECTIONS) && parentJson.get(JsonFormConstants.SECTIONS) instanceof JSONArray) {
+            if (parentJson.has(JsonFormConstants.SECTIONS) && parentJson
+                    .get(JsonFormConstants.SECTIONS) instanceof JSONArray) {
                 JSONArray sections = parentJson.getJSONArray(JsonFormConstants.SECTIONS);
                 fetchSections(viewsFromJson, stepName, formFragment, sections, listener, popup);
 
-            } else if (parentJson.has(JsonFormConstants.FIELDS) && parentJson.get(JsonFormConstants.FIELDS) instanceof JSONArray) {
+            } else if (parentJson.has(JsonFormConstants.FIELDS) && parentJson
+                    .get(JsonFormConstants.FIELDS) instanceof JSONArray) {
                 JSONArray fields = parentJson.getJSONArray(JsonFormConstants.FIELDS);
                 fetchFields(viewsFromJson, stepName, formFragment, fields, listener, popup);
             }
@@ -176,7 +176,8 @@ public class JsonFormInteractor {
         return viewsFromJson;
     }
 
-    private void fetchSections(List<View> viewsFromJson, String stepName, JsonFormFragment formFragment, JSONArray sections, CommonListener listener, Boolean popup) {
+    private void fetchSections(List<View> viewsFromJson, String stepName, JsonFormFragment formFragment,
+                               JSONArray sections, CommonListener listener, Boolean popup) {
         try {
             if (sections == null || sections.length() == 0) {
                 return;
@@ -186,7 +187,8 @@ public class JsonFormInteractor {
                 JSONObject sectionJson = sections.getJSONObject(i);
 
                 if (sectionJson.has(JsonFormConstants.NAME)) {
-                    fetchViews(viewsFromJson, stepName, formFragment, JsonFormConstants.SECTION_LABEL, sectionJson, listener, popup);
+                    fetchViews(viewsFromJson, stepName, formFragment, JsonFormConstants.SECTION_LABEL, sectionJson, listener,
+                            popup);
                 }
 
                 if (sectionJson.has(JsonFormConstants.FIELDS)) {
@@ -201,7 +203,8 @@ public class JsonFormInteractor {
         }
     }
 
-    public void fetchFields(List<View> viewsFromJson, String stepName, JsonFormFragment formFragment, JSONArray fields, CommonListener listener, Boolean popup) {
+    public void fetchFields(List<View> viewsFromJson, String stepName, JsonFormFragment formFragment,
+                            JSONArray fields, CommonListener listener, Boolean popup) {
 
         try {
             if (fields == null || fields.length() == 0) {
@@ -210,20 +213,22 @@ public class JsonFormInteractor {
 
             for (int i = 0; i < fields.length(); i++) {
                 JSONObject childJson = fields.getJSONObject(i);
-                fetchViews(viewsFromJson, stepName, formFragment, childJson.getString(JsonFormConstants.TYPE), childJson, listener, popup);
+                fetchViews(viewsFromJson, stepName, formFragment, childJson.getString(JsonFormConstants.TYPE), childJson,
+                        listener, popup);
             }
         } catch (JSONException e) {
             Timber.e(e);
         }
     }
 
-    private void fetchViews(final List<View> viewsFromJson, final String stepName, final JsonFormFragment formFragment, final String type, final JSONObject jsonObject, final CommonListener listener, final Boolean popup) {
-        if (JsonFormActivity.latch == null) {
-            JsonFormActivity.latch = new CountDownLatch(1);
+    private void fetchViews(final List<View> viewsFromJson, final String stepName, final JsonFormFragment formFragment,
+                            final String type, final JSONObject jsonObject, final CommonListener listener, final Boolean popup) {
+        if (formFragment.getJsonApi().getCountDownLatch() == null) {
+            formFragment.getJsonApi().setCountDownLatch(new CountDownLatch(1));
         } else {
-            long count = JsonFormActivity.latch.getCount();
+            long count = formFragment.getJsonApi().getCountDownLatch().getCount();
             count++;
-            JsonFormActivity.latch = new CountDownLatch((int) count);
+            formFragment.getJsonApi().setCountDownLatch(new CountDownLatch((int) count));
         }
         formFragment.getJsonApi().getAppExecutors().mainThread().execute(new Runnable() {
             @Override
@@ -249,8 +254,8 @@ public class JsonFormInteractor {
 
                 //This decrements the latch countdown to zero used in allowing the background thread
                 // to wait for UI thread to finish fetching views and Updating the skipLogicViews
-                if (JsonFormActivity.latch != null) {
-                    JsonFormActivity.latch.countDown();
+                if (formFragment.getJsonApi().getCountDownLatch() != null) {
+                    formFragment.getJsonApi().getCountDownLatch().countDown();
                 }
             }
         });

@@ -357,7 +357,7 @@ public class MultiSelectListFactory implements FormWidgetFactory {
         writeToForm(key);
         getAlertDialog(key).dismiss();
 
-        if (mMultiSelectItems.size() >= mMaxSelectable - 1) {
+        if (mMultiSelectItems != null && mMultiSelectItems.size() >= mMaxSelectable - 1) {
             btnMultiSelectAction.setVisibility(View.GONE);
             separatorForBtnMultiSelectAction.setVisibility(View.GONE);
         } else {
