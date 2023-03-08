@@ -1307,7 +1307,7 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
                     for (int i = 0; i < constraint.length(); i++) {
                         JSONObject curConstraint = constraint.getJSONObject(i);
                         if (address.length == 2) {
-                            String value = String.valueOf(getValueFromAddress(address, popup).get(JsonFormConstants.VALUE));
+                            String value = String.valueOf((Object) getValueFromAddress(address, popup).get(JsonFormConstants.VALUE));
                             errorMessage = enforceConstraint(value, curView, curConstraint);
                             if (errorMessage != null) break;
                         }
@@ -1547,7 +1547,7 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
                         args[i] = valueMatcher.group(1);
                     } else {
                         try {
-                            args[i] = String.valueOf(
+                            args[i] = String.valueOf((Object)
                                     getValueFromAddress(curArg.split(":"), false).get(JsonFormConstants.VALUE));
                         } catch (Exception e) {
                             Timber.e(e, "JsonFormActivity --> getFunctionArgs");
