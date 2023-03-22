@@ -1048,41 +1048,44 @@ public class JsonFormActivity extends JsonFormBaseActivity implements JsonApi {
 
         synchronized (getmJSONObject()) {
             JSONObject checkboxObject = formFields.get(stepName + "_" + parentKey);
-            JSONArray checkboxOptions = checkboxObject.getJSONArray(childObjectKey);
-            HashSet<String> currentValues = new HashSet<>();
-            //Get current values
-            if (checkboxObject.has(JsonFormConstants.VALUE)) {
-                formUtils.updateValueToJSONArray(checkboxObject, checkboxObject.optString(JsonFormConstants.VALUE, ""));
-            }
 
-            if (checkboxObject != null && checkboxOptions != null) {
-                if (checkboxObject.has(JsonFormConstants.VALUE) && StringUtils.isNotEmpty(checkboxObject.getString(JsonFormConstants.VALUE))) {
-                    currentValues.addAll(getCurrentCheckboxValues(checkboxObject.getJSONArray(JsonFormConstants.VALUE)));
+            if(checkboxObject != null) {
+                JSONArray checkboxOptions = checkboxObject.getJSONArray(childObjectKey);
+                HashSet<String> currentValues = new HashSet<>();
+                //Get current values
+                if (checkboxObject.has(JsonFormConstants.VALUE)) {
+                    formUtils.updateValueToJSONArray(checkboxObject, checkboxObject.optString(JsonFormConstants.VALUE, ""));
                 }
 
-                for (int index = 0; index < checkboxOptions.length(); index++) {
-                    JSONObject option = checkboxOptions.getJSONObject(index);
-                    if (option.has(JsonFormConstants.KEY) &&
-                            childKey.equals(option.getString(JsonFormConstants.KEY))) {
-                        option.put(JsonFormConstants.VALUE, Boolean.parseBoolean(value));
-                        if (Boolean.parseBoolean(value)) {
-                            if (Utils.enabledProperty(NativeFormsProperties.KEY.WIDGET_VALUE_TRANSLATED)) {
-                                JSONObject object = Utils.generateTranslatableValue(childKey, option);
-                                currentValues.add(object.toString());
+                if (checkboxOptions != null) {
+                    if (checkboxObject.has(JsonFormConstants.VALUE) && StringUtils.isNotEmpty(checkboxObject.getString(JsonFormConstants.VALUE))) {
+                        currentValues.addAll(getCurrentCheckboxValues(checkboxObject.getJSONArray(JsonFormConstants.VALUE)));
+                    }
+
+                    for (int index = 0; index < checkboxOptions.length(); index++) {
+                        JSONObject option = checkboxOptions.getJSONObject(index);
+                        if (option.has(JsonFormConstants.KEY) &&
+                                childKey.equals(option.getString(JsonFormConstants.KEY))) {
+                            option.put(JsonFormConstants.VALUE, Boolean.parseBoolean(value));
+                            if (Boolean.parseBoolean(value)) {
+                                if (Utils.enabledProperty(NativeFormsProperties.KEY.WIDGET_VALUE_TRANSLATED)) {
+                                    JSONObject object = Utils.generateTranslatableValue(childKey, option);
+                                    currentValues.add(object.toString());
+                                } else {
+                                    currentValues.add(childKey);
+                                }
                             } else {
-                                currentValues.add(childKey);
-                            }
-                        } else {
-                            if (Utils.enabledProperty(NativeFormsProperties.KEY.WIDGET_VALUE_TRANSLATED)) {
-                                JSONObject object = Utils.generateTranslatableValue(childKey, option);
-                                currentValues.remove(object.toString());
-                            } else {
-                                currentValues.remove(childKey);
+                                if (Utils.enabledProperty(NativeFormsProperties.KEY.WIDGET_VALUE_TRANSLATED)) {
+                                    JSONObject object = Utils.generateTranslatableValue(childKey, option);
+                                    currentValues.remove(object.toString());
+                                } else {
+                                    currentValues.remove(childKey);
+                                }
                             }
                         }
                     }
+                    checkboxObject.put(JsonFormConstants.VALUE, getCheckboxValueJsonArray(currentValues));
                 }
-                checkboxObject.put(JsonFormConstants.VALUE, getCheckboxValueJsonArray(currentValues));
             }
             invokeRefreshLogic(value, popup, parentKey, childKey, stepName, false);
         }
