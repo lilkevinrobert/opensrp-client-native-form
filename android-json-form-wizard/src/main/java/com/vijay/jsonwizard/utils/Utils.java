@@ -258,7 +258,7 @@ public class Utils {
         if (jsonArray != null) {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject tempJsonObject = jsonArray.optJSONObject(i);
-                if (tempJsonObject != null && tempJsonObject.optString(KEY).equals(key)) {
+                if (tempJsonObject != null && tempJsonObject.optString(KEY).equals(tempJsonObject.optString(key))) {
                     jsonObject = tempJsonObject;
                     break;
                 }
