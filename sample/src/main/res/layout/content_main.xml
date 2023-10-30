@@ -17,6 +17,16 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/client_general_registration"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/client_registration"
+            android:textColor="@android:color/white"
+            android:theme="@style/NativeFormsAppTheme" />
+
+        <Button
             android:id="@+id/child_enrollment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

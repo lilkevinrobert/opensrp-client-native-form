@@ -2,8 +2,10 @@ package org.smartregister.nativeform;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.repeating_group_button).setOnClickListener(this);
         findViewById(R.id.multiselect_list).setOnClickListener(this);
         findViewById(R.id.optibp_widget).setOnClickListener(this);
+        findViewById(R.id.client_general_registration).setOnClickListener(this);
     }
 
     @Override
@@ -214,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 jsonObject.remove(JsonFormConstants.OptibpConstants.OPTIBP_KEY_DATA);
                             }
                             JSONObject optiBPData = FormUtils.createOptiBPDataObject("46ccd2e0-bbec-4e4a-8f73-972a2f1f95ea",
-                                    "1272326657","");
+                                    "1272326657", "");
                             jsonObject.put(JsonFormConstants.OptibpConstants.OPTIBP_KEY_DATA, optiBPData);
                             break;
                         }
@@ -267,6 +270,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (id) {
                 case R.id.child_enrollment:
                     startForm(REQUEST_CODE_GET_JSON, "single_form", null, true);
+                    break;
+                case R.id.client_general_registration:
+                    startForm(REQUEST_CODE_GET_JSON, "client_registration_form", null, true);
                     break;
                 case R.id.wizard_form:
                     startForm(REQUEST_CODE_GET_JSON, "wizard_form", null, false);

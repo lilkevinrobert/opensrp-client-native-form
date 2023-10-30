@@ -16,6 +16,7 @@
     <string name="wizard_multi_step_form">WIZARD (MULTI-STEP FORM)</string>
     <string name="rules_engine_logic">RULES ENGINE LOGIC</string>
     <string name="constraints">CONSTRAINTS</string>
+    <string name="client_registration">Client\'s General Registration</string>
     <string name="generic_popup">GENERIC POPUP</string>
     <string name="form_validation">FORM VALIDATION</string>
     <string name="expansion_panel">Expansion Panel</string>
